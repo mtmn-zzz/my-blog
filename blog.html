@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>我的个人博客 | 记录与分享</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #faf9f8;
+            color: #1e1e2a;
+            line-height: 1.6;
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.9);
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #334155;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #3b82f6;
+        }
+
+        /* 按钮样式 */
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        /* 英雄区 */
+        .hero {
+            padding: 4rem 0 3rem;
+            text-align: center;
+            background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+            border-radius: 0 0 2rem 2rem;
+            margin-bottom: 2rem;
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #475569;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 网格布局 */
+        .grid-2cols {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2.5rem;
+            margin: 2rem 0;
+        }
+
+        /* 文章卡片 */
+        .post-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #eef2ff;
+        }
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1);
+        }
+        .post-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+        .post-meta {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .post-summary {
+            color: #334155;
+            margin-bottom: 1rem;
+        }
+        .read-more {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* 关于卡片 (简历风格) */
+        .about-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            border: 1px solid #eef2ff;
+            position: sticky;
+            top: 100px;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem auto;
+            display: block;
+            border: 3px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: #d9e2ef;
+        }
+        .about-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+        .about-bio {
+            text-align: center;
+            color: #4b5563;
+            margin-bottom: 1.2rem;
+            font-size: 0.9rem;
+        }
+        .section-title {
+            font-weight: 600;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
+            border-left: 4px solid #3b82f6;
+            padding-left: 12px;
+        }
+        .interest-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 0.5rem 0 1rem;
+        }
+        .tag {
+            background: #eef2ff;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            color: #1e40af;
+        }
+        .experience-item {
+            margin-bottom: 0.8rem;
+        }
+        .exp-title {
+            font-weight: 600;
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2cols {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .nav-content {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+        }
+
+        /* 简单动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .post-card, .about-card {
+            animation: fadeIn 0.4s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span style="color: initial;">🫧</span>
+                槑头槑脑·博客</div>
+            <div class="nav-links">
+                <a href="#">首页</a>
+                <a href="#">文章</a>
+                <a href="#">关于</a>
+                <button class="btn-outline" id="loginMockBtn">登录体验</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="hero">
+            <h1>记录成长 · 分享思考</h1>
+            <p>专注生活学习 & AI 探索 | 从0到1 构建自己的博客</p>
+        </div>
+
+        <div class="grid-2cols">
+            <!-- 左侧：文章列表区 -->
+            <div>
+                <h3 style="margin-bottom: 1rem; font-weight: 600;">🎼 分享喜欢的音乐</h3>
+                <div class="audio_button">
+                    <audio id="myaudio" controls>
+                        <source src="assets\Daniel Caesar _ H_E_R_ - Best Part(feat_ H_E_R_).mp3">
+                    </audio>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-weight: 600">❤️ 我的入坑代码</h3>
+                <div class="video_button">
+                    <video controls 
+                        src="assets\heart.mp4"
+                        style="max-width:550px;
+                        width:100%;
+                        height:auto;
+                        display:block;
+                        margin:10px auto;
+                        border-radius: 12px;
+                        box-shadow:0 4px 20px rgba(0,0,0,0.15);"
+                        autoplay muted loop>
+                    </video>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-weight: 600;">📝 最新发布</h3>
+                <div id="articlesList">
+                    <!-- 动态渲染文章列表 或 使用静态占位 -->
+                </div>
+            </div>
+
+            <!-- 右侧：个人介绍区 (简历风格) -->
+            <div>
+                <div class="about-card">
+                    <img class="avatar" src="assets\cb95d0db32fc6977d2a288bd3ccc0252.png" alt="头像"
+                         onerror="this.src='assets/cb95d0db32fc6977d2a288bd3ccc0252.png'">
+                    <div class="about-name">槑头槑脑</div>
+                    <div class="about-bio">计算机学习者 / AI爱好者</div>
+                    
+                    <div class="section-title">✨ 兴趣领域</div>
+                    <div class="interest-tags">
+                        <span class="tag">旅游</span>
+                        <span class="tag">摄影</span>
+                        <span class="tag">音乐</span>
+                        <span class="tag">可视化技术</span>
+                        <span class="tag">独立产品</span>
+                    </div>
+
+                    <div class="section-title">📌 经历</div>
+                    <div class="experience-item">
+                        <div class="exp-title">· 浙江大学学生 计算机科学与技术学院</div>
+                        <div style="font-size: 0.85rem; color: #4b5563;">2025 - 至今 | 计算机科学与技术专业</div>
+                    </div>
+                    <div class="experience-item">
+                        <div class="exp-title">· 独立开发者项目</div>
+                        <div style="font-size: 0.85rem; color: #4b5563;">个人博客ing/wait to do / wait to do </div>
+                    </div>
+                    <div class="experience-item">
+                        <div class="exp-title">· 计算机本科 @ 浙江大学</div>
+                        <div style="font-size: 0.85rem; color: #4b5563;">研究方向: 暂无</div>
+                    </div>
+
+                    <div class="section-title">📬 联系我</div>
+                    <div style="display: flex; gap: 12px; margin-top: 6px;">
+                        <span>📧 2484830674@qq.com</span>
+                        <span>🐙 github/mtmn-zzz</span>
+                    </div>
+                    <div style="margin-top: 1rem; font-size: 0.8rem; background: #f8fafc; padding: 0.8rem; border-radius: 1rem;">
+                        💡 “构建会思考的博客 —— 未来 MCP 协议接入，让 Agent 管理内容”
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 槑头槑脑 的博客 | 希望可以做一个越来越棒的人 | 保持热爱，持续输出</p>
+        </div>
+    </footer>
+
+    <script>
+        // ----- 模拟博客文章数据 (未来替换为后端API) -----
+        const mockArticles = [
+            {
+                id: 1,
+                title: "从0到1搭建个人博客：技术选型与架构设计",
+                date: "2026-05-20",
+                readTime: "n 分钟",
+                summary: "分享构建全栈博客的技术选型心得：正在施工中，敬请期待！",
+                contentPath: "#"
+            }
+        ];
+
+        // 渲染文章列表
+        function renderArticles(articles) {
+            const container = document.getElementById('articlesList');
+            if (!container) return;
+            container.innerHTML = articles.map(article => `
+                <article class="post-card">
+                    <h3 class="post-title">${escapeHtml(article.title)}</h3>
+                    <div class="post-meta">
+                        <span>📅 ${article.date}</span>
+                        <span>⏱️ ${article.readTime}</span>
+                    </div>
+                    <div class="post-summary">${escapeHtml(article.summary)}</div>
+                    <a href="${article.contentPath}" class="read-more" onclick="return false;">阅读全文 →</a>
+                </article>
+            `).join('');
+        }
+
+        // 简易防XSS
+        function escapeHtml(str) {
+            if (str == null) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // 简单模拟登录交互 (前端演示)
+        const loginBtn = document.getElementById('loginMockBtn');
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                alert('🐣 当前为演示版本，后续将接入真实JWT鉴权 + 评论点赞功能！\n敬请期待第二周迭代。');
+            });
+        }
+
+        // 初始渲染
+        renderArticles(mockArticles);
+
+        //音乐播放器
+        var audio = document.getElementById('myaudio');
+        //获取audio的对象到变量x中
+
+        //获取到对自定义audio这个div的点击
+        $('.audio_button').click(function() {
+
+        if(audio.paused){ //如果当前是暂停状态
+            $('.audio_button').css({'background-color': '#eea0e7', 'color': 'rgb(12, 12, 12)'});  //改变css值，显示为播放
+        audio.play(); //播放
+
+        alert("品味不错吧！");
+        return;
+        }
+    
+        else{//当前是播放状态
+            $('.audio_button').css({'background-color': '#86c3e9', 'color': 'rgb(12, 12, 12)'});  //改变css值，显示为暂停
+        audio.pause(); //暂停
+        }
+        });
+    </script>
+</body>
+</html>

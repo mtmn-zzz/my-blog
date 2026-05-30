@@ -1,0 +1,284 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  background: #faf9f8;
+  color: #1e1e2a;
+  line-height: 1.6;
+}
+
+/* 容器 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* 导航栏 */
+.navbar {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.9);
+}
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  flex-wrap: wrap;
+}
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  letter-spacing: -0.5px;
+}
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+.nav-links a {
+  text-decoration: none;
+  color: #334155;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover {
+  color: #3b82f6;
+}
+
+/* 按钮样式 */
+.btn-outline {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-outline:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+/* 英雄区 */
+.hero {
+  padding: 4rem 0 3rem;
+  text-align: center;
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  border-radius: 0 0 2rem 2rem;
+  margin-bottom: 2rem;
+}
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, #3b82f6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+.hero p {
+  font-size: 1.2rem;
+  color: #475569;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 网格布局 */
+.grid-2cols {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2.5rem;
+  margin: 2rem 0;
+}
+
+/* 文章卡片 */
+.post-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #eef2ff;
+}
+.post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1);
+}
+.post-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #0f172a;
+}
+.post-meta {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-bottom: 0.75rem;
+  display: flex;
+  gap: 1rem;
+}
+.post-summary {
+  color: #334155;
+  margin-bottom: 1rem;
+}
+.read-more {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* 关于卡片 (简历风格) */
+.about-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.8rem;
+  border: 1px solid #eef2ff;
+  position: sticky;
+  top: 100px;
+}
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem auto;
+  display: block;
+  border: 3px solid white;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  background: #d9e2ef;
+}
+.about-name {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+.about-bio {
+  text-align: center;
+  color: #4b5563;
+  margin-bottom: 1.2rem;
+  font-size: 0.9rem;
+}
+.section-title {
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1.1rem;
+  border-left: 4px solid #3b82f6;
+  padding-left: 12px;
+}
+.interest-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.5rem 0 1rem;
+}
+.tag {
+  background: #eef2ff;
+  padding: 0.2rem 0.8rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  color: #1e40af;
+}
+.experience-item {
+  margin-bottom: 0.8rem;
+}
+.exp-title {
+  font-weight: 600;
+}
+
+/* 页脚 */
+.footer {
+  text-align: center;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  border-top: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .grid-2cols {
+      grid-template-columns: 1fr;
+  }
+  .hero h1 {
+      font-size: 2rem;
+  }
+  .nav-content {
+      flex-direction: column;
+      gap: 0.8rem;
+  }
+}
+
+/* 简单动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.post-card, .about-card {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.back-home-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  width: 280px;         /* 设定卡片宽度 */
+  padding: 16px 20px;   /* 内边距 */
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0; /* 淡淡的边框 */
+  border-radius: 12px;  /* 圆角，让卡片看起来更精致 */
+  text-decoration: none;/* 去掉传统的下划线 */
+  color: #1e293b;       /* 深色文字 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* 微微的阴影 */
+  transition: all 0.3s ease; /* 开启全局丝滑过渡动画 */
+  cursor: pointer;
+}
+
+/* 💡 鼠标悬停（Hover）时的惊艳效果 */
+.back-home-card:hover {
+  border-color: #3b82f6; /* 边框变蓝 */
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1); /* 阴影变大且带有一点蓝色 */
+  transform: translateY(-4px); /* 卡片微微向上浮动 4 像素 */
+}
+
+.card-icon {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+/* 悬停时让箭头往左摆动一下，细节拉满 */
+.back-home-card:hover .card-icon {
+  transform: translateX(-4px);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: #64748b; /* 副标题灰色 */
+}
