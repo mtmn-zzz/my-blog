@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import ReactMarkDown from "react-markdown"
+import ReactMarkDown from "react-markdown";
 import { fetchArticle } from "../api/client";
 import type { ArticleDetail as ArticleDetailType } from "../api/types";
 import { getReadTime } from "../utils/readTime";

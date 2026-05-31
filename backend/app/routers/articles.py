@@ -7,7 +7,6 @@ from app.schemas import ArticleCreate, ArticleListItem, ArticleRead
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
-
 @router.get("", response_model=list[ArticleListItem])
 def list_articles(db: Session = Depends(get_db)):
     return db.query(Article).order_by(Article.created_at.desc()).all()
@@ -32,3 +31,21 @@ def create_article(payload: ArticleCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(article)
     return article
+
+
+@router.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_article(article_id: int, db: Session = Depends(get_db)):
+
+    article = db.get(Article, article_id)
+
+
+    if not article:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="文章不存在"
+        )
+
+    db.delete(article)
+    db.commit()
+
+    return None

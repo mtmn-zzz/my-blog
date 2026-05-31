@@ -19,7 +19,14 @@ export function About() {
         className="about-page-grid"
       >
         <div className="about-card" style={{ position: "sticky", top: "88px" }}>
-          <img className="avatar" src="assets\cb95d0db32fc6977d2a288bd3ccc0252.png" alt="头像" />
+          <img
+            className="avatar"
+            src="/assets/cb95d0db32fc6977d2a288bd3ccc0252.png"
+            alt="头像"
+            onError={(e) => {
+              e.currentTarget.src = "/avatar.svg";
+            }}
+          />
           <div className="about-name">槑头槑脑</div>
           <div className="about-bio">浙江大学学生 / 计算机爱好者</div>
           <div className="section-title">联系我</div>
