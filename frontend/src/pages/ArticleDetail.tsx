@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactMarkDown from "react-markdown";
+import { ArticleEngagement } from "../components/ArticleEngagement";
+import { ArticleAiSummary } from "../components/ArticleAiSummary";
 import { fetchArticle } from "../api/client";
 import type { ArticleDetail as ArticleDetailType } from "../api/types";
 import { getReadTime } from "../utils/readTime";
@@ -83,9 +85,10 @@ export function ArticleDetail() {
         <article className="article-detail">
           <header className="article-header">
             <h1 className="article-title">{article.title}</h1>
-            {article.summary && (
-              <p className="article-lede">{article.summary}</p>
-            )}
+            <ArticleAiSummary
+              article={article}
+              onSummaryUpdate={(summary) => setArticle((prev) => (prev ? { ...prev, summary } : prev))}
+            />
             <div className="article-meta">
               <span className="meta-chip">
                 📅 {formatDate(article.created_at)}
@@ -105,6 +108,10 @@ export function ArticleDetail() {
 
           <div className="article-body markdown-body">
             <ReactMarkDown>{article.content}</ReactMarkDown>
+          </div>
+
+          <div className="article-engagement-wrap">
+            <ArticleEngagement articleId={article.id} />
           </div>
         </article>
       </div>

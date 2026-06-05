@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getGithubLoginUrl } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 
 export function Login() {
@@ -29,6 +30,15 @@ export function Login() {
       <div className="auth-card post-card">
         <h1 className="auth-title">登录</h1>
         <p className="auth-subtitle">欢迎回来，登录后可管理你的账号</p>
+
+        <a href={getGithubLoginUrl()} className="btn-github">
+          使用 GitHub 登录
+        </a>
+
+        <div className="auth-divider">
+          <span>或使用账号密码</span>
+        </div>
+
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>
             用户名

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { NavSearch } from "./NavSearch";
 import { useAuth } from "../context/AuthContext";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -18,6 +19,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <span className="logo-label">博客</span>
           </NavLink>
           <div className="nav-links">
+            <NavSearch />
             <NavLink to="/" className={linkClass} end>
               首页
             </NavLink>
@@ -26,9 +28,9 @@ export function Layout({ children }: { children: ReactNode }) {
             </NavLink>
             {!loading && user ? (
               <div className="nav-auth-group">
-                <span className="nav-user-badge">
+                <Link to="/profile" className="nav-user-badge nav-user-link">
                   {user.nickname || user.username}
-                </span>
+                </Link>
                 <button type="button" className="nav-btn nav-btn-ghost" onClick={logout}>
                   退出
                 </button>

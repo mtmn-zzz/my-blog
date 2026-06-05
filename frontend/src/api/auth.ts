@@ -1,4 +1,4 @@
-import type { AuthResponse, RegisterResponse, User } from "./auth-types";
+import type { AuthResponse, ProfileUpdate, RegisterResponse, User } from "./auth-types";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
 
@@ -64,4 +64,46 @@ export async function fetchCurrentUser(token: string): Promise<User> {
     headers: { Authorization: `Bearer ${token}` },
   });
   return parseJson<User>(res);
+}
+
+export async function updateProfile(token: string, payload: ProfileUpdate): Promise<User> {
+  const res = await fetch(`${BASE_URL}/auth/me`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  return parseJson<User>(res);
+}
+
+export async function changePassword(
+  token: string,
+  payload: { old_password: string; new_password: string },
+): Promise<{ message: string }> {
+  const res = await fetch(`${BASE_URL}/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  return parseJson<{ message: string }>(res);
+}
+
+export async function uploadAvatar(token: string, file: File): Promise<User> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${BASE_URL}/auth/me/avatar`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
+  return parseJson<User>(res);
+}
+
+export function getGithubLoginUrl(): string {
+  return `${BASE_URL}/auth/github`;
 }

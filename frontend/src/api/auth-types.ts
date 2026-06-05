@@ -5,6 +5,13 @@ export type User = {
   nickname: string | null;
   avatar_url: string | null;
   created_at: string;
+  has_password?: boolean;
+};
+
+export type ProfileUpdate = {
+  nickname?: string | null;
+  email?: string | null;
+  avatar_url?: string | null;
 };
 
 export type AuthResponse = {

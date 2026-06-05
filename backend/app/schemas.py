@@ -18,11 +18,40 @@ class ArticleRead(ArticleBase):
 
     id: int
     created_at: datetime
-    updated_at: datetime 
+    updated_at: datetime
 
-class ArticleListItem(BaseModel):
+
+class LikeStatus(BaseModel):
+    count: int
+    liked: bool
+
+
+class CommentCreate(BaseModel):
+    content: str = Field(..., min_length=1, max_length=2000)
+    parent_id: int | None = None
+
+
+class CommentAuthor(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    id: int
+    username: str
+    nickname: str | None
+    avatar_url: str | None
+
+
+class CommentRead(BaseModel):
+    id: int
+    content: str
+    created_at: datetime
+    user: CommentAuthor
+    replies: list["CommentRead"] = []
+
+
+CommentRead.model_rebuild()
+
+
+class ArticleListItem(BaseModel):
     id: int
     title: str
     summary: str
@@ -30,3 +59,4 @@ class ArticleListItem(BaseModel):
     read_time: int
     created_at: datetime
     updated_at: datetime
+    like_count: int = 0

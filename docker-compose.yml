@@ -20,7 +20,14 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: postgresql://blog:blogsecret@db:5432/blogdb
-      JWT_SECRET: blog-jwt-secret-change-in-production
+      JWT_SECRET: ${JWT_SECRET:-blog-jwt-secret-change-in-production}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL:-http://127.0.0.1:8000/auth/github/callback}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_API_BASE: ${AI_API_BASE:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      AI_MODEL: ${AI_MODEL:-qwen-turbo}
     depends_on:
       db:
         condition: service_healthy

@@ -3,11 +3,13 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.database import Base, engine
-from app.models import Article, User  # noqa: F401 — register model with metadata
-from app.routers import articles, auth
+from app.models import Article, ArticleLike, Comment, User  # noqa: F401 — register model with metadata
+from app.routers import articles, auth, comments, engagement, github_auth
+from app.uploads import UPLOAD_DIR, ensure_upload_dirs
 
 # 设置日志，方便看清到底是哪里卡或报错
 logging.basicConfig(level=logging.INFO)
@@ -34,6 +36,22 @@ def _ensure_schema() -> None:
                         "ADD COLUMN IF NOT EXISTS read_time INTEGER NOT NULL DEFAULT 1"
                     )
                 )
+                conn.execute(
+                    text(
+                        "ALTER TABLE comments "
+                        "ADD COLUMN IF NOT EXISTS parent_id INTEGER "
+                        "REFERENCES comments(id) ON DELETE CASCADE"
+                    )
+                )
+                conn.execute(
+                    text("ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL")
+                )
+                conn.execute(
+                    text(
+                        "ALTER TABLE users "
+                        "ADD COLUMN IF NOT EXISTS github_id BIGINT UNIQUE"
+                    )
+                )
         logger.info("数据库表结构检查/升级完成。")
     except Exception as e:
         # 🔥 关键保护：即便数据库连接超时或死锁，也只打印错误而不卡死整个后端服务
@@ -42,6 +60,7 @@ def _ensure_schema() -> None:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    ensure_upload_dirs()
     # 启动时执行数据库安全检查
     _ensure_schema()
     yield
@@ -60,7 +79,11 @@ app.add_middleware(
 
 # 注册文章路由（确保你修改的 articles.py 是在该文件导入的 app.routers 路径下）
 app.include_router(articles.router)
+app.include_router(engagement.router)
+app.include_router(comments.router)
 app.include_router(auth.router)
+app.include_router(github_auth.router)
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 
 @app.get("/health")

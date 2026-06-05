@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getGithubLoginUrl } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 
 export function Register() {
@@ -30,6 +31,15 @@ export function Register() {
       <div className="auth-card post-card">
         <h1 className="auth-title">注册</h1>
         <p className="auth-subtitle">创建账号，加入博客社区</p>
+
+        <a href={getGithubLoginUrl()} className="btn-github">
+          使用 GitHub 注册
+        </a>
+
+        <div className="auth-divider">
+          <span>或使用邮箱注册</span>
+        </div>
+
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>
             用户名

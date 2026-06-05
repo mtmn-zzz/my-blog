@@ -7,20 +7,27 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { User } from "../api/auth-types";
+import type { ProfileUpdate, User } from "../api/auth-types";
 import {
+  changePassword as changePasswordApi,
   fetchCurrentUser,
   getStoredToken,
   loginUser,
   registerUser,
   setStoredToken,
+  updateProfile,
+  uploadAvatar as uploadAvatarApi,
 } from "../api/auth";
 
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
+  loginWithToken: (token: string) => Promise<void>;
   register: (username: string, password: string, email?: string) => Promise<void>;
+  updateUser: (data: ProfileUpdate) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
+  changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -48,6 +55,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   }, []);
 
+  const loginWithToken = useCallback(async (token: string) => {
+    setStoredToken(token);
+    const currentUser = await fetchCurrentUser(token);
+    setUser(currentUser);
+  }, []);
+
   const register = useCallback(
     async (username: string, password: string, email?: string) => {
       await registerUser({ username, password, email: email || undefined });
@@ -61,9 +74,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const updateUser = useCallback(async (data: ProfileUpdate) => {
+    const token = getStoredToken();
+    if (!token) throw new Error("未登录");
+    const updated = await updateProfile(token, data);
+    setUser(updated);
+  }, []);
+
+  const uploadAvatar = useCallback(async (file: File) => {
+    const token = getStoredToken();
+    if (!token) throw new Error("未登录");
+    const updated = await uploadAvatarApi(token, file);
+    setUser(updated);
+  }, []);
+
+  const changePassword = useCallback(async (oldPassword: string, newPassword: string) => {
+    const token = getStoredToken();
+    if (!token) throw new Error("未登录");
+    await changePasswordApi(token, {
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
+    const updated = await fetchCurrentUser(token);
+    setUser(updated);
+  }, []);
+
   const value = useMemo(
-    () => ({ user, loading, login, register, logout }),
-    [user, loading, login, register, logout],
+    () => ({ user, loading, login, loginWithToken, register, updateUser, uploadAvatar, changePassword, logout }),
+    [user, loading, login, loginWithToken, register, updateUser, uploadAvatar, changePassword, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

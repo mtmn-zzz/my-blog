@@ -54,12 +54,25 @@ export function Home() {
   }, []);
 
   return (
-    <main className="container">
-      <div className="hero">
-        <h1>记录成长 · 分享思考</h1>
-        <p>专注生活学习 & AI 探索 | 从0到1 构建自己的博客</p>
-      </div>
+    <>
+      <section className="hero">
+        <div className="hero-glow hero-glow-left" aria-hidden="true" />
+        <div className="hero-glow hero-glow-right" aria-hidden="true" />
+        <div className="container hero-inner">
+          <p className="hero-eyebrow">Welcome to my blog</p>
+          <h1 className="hero-title">记录成长 · 分享思考</h1>
+          <p className="hero-subtitle">
+            专注
+            <span className="hero-highlight">生活学习</span>
+            {" & "}
+            <span className="hero-highlight">AI 探索</span>
+            <span className="hero-subtitle-divider">|</span>
+            从0到1 构建自己的博客
+          </p>
+        </div>
+      </section>
 
+      <main className="container">
       <div className="grid-2cols">
         <div>
           <h3 style={sectionHeadingStyle}>🎼 分享喜欢的音乐</h3>
@@ -94,6 +107,7 @@ export function Home() {
                 <div className="post-meta">
                   <span>📅 {formatDate(article.created_at)}</span>
                   <span> ⌛ {getReadTime(article.content)} 分钟阅读</span>
+                  <span> ❤️ {article.like_count ?? 0} 赞</span>
                 </div>
                 <div className="post-summary">{article.summary}</div>
                 <Link to={`/articles/${article.id}`} className="post-read-btn">
@@ -168,5 +182,6 @@ export function Home() {
         </div>
       </div>
     </main>
+    </>
   );
 }
