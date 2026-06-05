@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from app.database import Base, engine
-from app.models import Article  # noqa: F401 — register model with metadata
+from app.models import Article, User  # noqa: F401 — register model with metadata
 from app.routers import articles
 
 # 设置日志，方便看清到底是哪里卡或报错
