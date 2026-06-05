@@ -7,7 +7,11 @@ import { getReadTime } from "../utils/readTime";
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleString("zh-CN");
+    return new Date(iso).toLocaleDateString("zh-CN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   } catch {
     return iso;
   }
@@ -44,44 +48,65 @@ export function ArticleDetail() {
 
   if (loading) {
     return (
-      <div className="container" style={{ padding: "2rem 0" }}>
-        <p className="muted">加载中…</p>
+      <div className="article-page">
+        <div className="article-container">
+          <p className="article-loading">加载中…</p>
+        </div>
       </div>
     );
   }
 
   if (error || !article) {
     return (
-      <div className="container" style={{ padding: "2rem 0" }}>
-        <div className="error-box">{error}</div>
-        <p style={{ marginTop: "1rem" }}>
-          <Link to="/" className="read-more">
-            ← 返回首页
+      <div className="article-page">
+        <div className="article-container">
+          <div className="article-error">{error}</div>
+          <Link to="/" className="article-back">
+            <span className="article-back-icon">←</span>
+            返回首页
           </Link>
-        </p>
+        </div>
       </div>
     );
   }
 
+  const showUpdated = article.updated_at !== article.created_at;
+
   return (
-    <div className="container" style={{ padding: "2rem 0 3rem" }}>
-      <p style={{ marginBottom: "1rem" }}>
-        <Link to="/" className="read-more">
-          ← 返回列表
+    <div className="article-page">
+      <div className="article-container">
+        <Link to="/" className="article-back">
+          <span className="article-back-icon">←</span>
+          返回列表
         </Link>
-      </p>
-      <article className="post-card" style={{ marginBottom: "1.5rem" }}>
-        <h1 className="post-title" style={{ fontSize: "1.75rem" }}>
-          {article.title}
-        </h1>
-        <div className="post-meta">
-          <span>发布于 {formatDate(article.created_at)}</span>
-          <span>更新于 {formatDate(article.updated_at)}</span>
-          <span> ⌛ {getReadTime(article.content)} 分钟阅读</span>
-        </div>
-      </article>
-      <div className="article-body markdown-body">
-        <ReactMarkDown>{article.content}</ReactMarkDown>
+
+        <article className="article-detail">
+          <header className="article-header">
+            <h1 className="article-title">{article.title}</h1>
+            {article.summary && (
+              <p className="article-lede">{article.summary}</p>
+            )}
+            <div className="article-meta">
+              <span className="meta-chip">
+                📅 {formatDate(article.created_at)}
+              </span>
+              {showUpdated && (
+                <span className="meta-chip">
+                  ✏️ 更新于 {formatDate(article.updated_at)}
+                </span>
+              )}
+              <span className="meta-chip">
+                ⌛ {getReadTime(article.content)} 分钟阅读
+              </span>
+            </div>
+          </header>
+
+          <div className="article-divider" />
+
+          <div className="article-body markdown-body">
+            <ReactMarkDown>{article.content}</ReactMarkDown>
+          </div>
+        </article>
       </div>
     </div>
   );

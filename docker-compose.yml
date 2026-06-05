@@ -20,6 +20,7 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: postgresql://blog:blogsecret@db:5432/blogdb
+      JWT_SECRET: blog-jwt-secret-change-in-production
     depends_on:
       db:
         condition: service_healthy

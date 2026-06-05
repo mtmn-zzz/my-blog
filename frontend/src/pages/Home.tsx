@@ -96,7 +96,7 @@ export function Home() {
                   <span> ⌛ {getReadTime(article.content)} 分钟阅读</span>
                 </div>
                 <div className="post-summary">{article.summary}</div>
-                <Link to={`/articles/${article.id}`} className="read-more">
+                <Link to={`/articles/${article.id}`} className="post-read-btn">
                   阅读全文 →
                 </Link>
               </article>

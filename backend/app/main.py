@@ -7,7 +7,7 @@ from sqlalchemy import text
 
 from app.database import Base, engine
 from app.models import Article, User  # noqa: F401 — register model with metadata
-from app.routers import articles
+from app.routers import articles, auth
 
 # 设置日志，方便看清到底是哪里卡或报错
 logging.basicConfig(level=logging.INFO)
@@ -60,6 +60,7 @@ app.add_middleware(
 
 # 注册文章路由（确保你修改的 articles.py 是在该文件导入的 app.routers 路径下）
 app.include_router(articles.router)
+app.include_router(auth.router)
 
 
 @app.get("/health")

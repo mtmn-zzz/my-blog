@@ -1,16 +1,21 @@
 import type { ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? "active" : undefined;
 
 export function Layout({ children }: { children: ReactNode }) {
+  const { user, loading, logout } = useAuth();
+
   return (
     <>
       <nav className="navbar">
         <div className="container nav-content">
           <NavLink to="/" className="logo" end>
-            槑头槑脑 · 博客
+            <span className="logo-name">槑头槑脑</span>
+            <span className="logo-dot" aria-hidden="true" />
+            <span className="logo-label">博客</span>
           </NavLink>
           <div className="nav-links">
             <NavLink to="/" className={linkClass} end>
@@ -19,18 +24,32 @@ export function Layout({ children }: { children: ReactNode }) {
             <NavLink to="/about" className={linkClass}>
               关于
             </NavLink>
-            <button className="btn-outline" onClick={() =>alert("🐣 当前为演示版本，后续将接入真实JWT鉴权 + 评论点赞功能！\n敬请期待第二周迭代。")}>
-              登录体验
-              </button>
+            {!loading && user ? (
+              <div className="nav-auth-group">
+                <span className="nav-user-badge">
+                  {user.nickname || user.username}
+                </span>
+                <button type="button" className="nav-btn nav-btn-ghost" onClick={logout}>
+                  退出
+                </button>
+              </div>
+            ) : (
+              <div className="nav-auth-group">
+                <Link to="/login" className="nav-btn nav-btn-ghost">
+                  登录
+                </Link>
+                <Link to="/register" className="nav-btn nav-btn-accent">
+                  注册
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </nav>
       <main>{children}</main>
       <footer className="footer">
         <div className="container">
-          <p>
-            © {new Date().getFullYear()} 个人博客 | study & life | blog
-          </p>
+          <p>© {new Date().getFullYear()} 个人博客 | study & life | blog</p>
         </div>
       </footer>
     </>

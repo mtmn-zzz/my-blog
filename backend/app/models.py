@@ -23,6 +23,8 @@ class Article(Base):
         nullable=False,
     )
     read_time: Mapped[int] = mapped_column(Integer, default=1)
+
+
 class User(Base):
     __tablename__ = "users"
 

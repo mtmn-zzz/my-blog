@@ -3,11 +3,10 @@ import { Link } from "react-router-dom";
 export function About() {
   return (
     <div className="container" style={{ padding: "2rem 0 3rem" }}>
-      <p style={{ marginBottom: "1.5rem" }}>
-        <Link to="/" className="read-more">
-          ← 返回首页
-        </Link>
-      </p>
+      <Link to="/" className="article-back" style={{ marginBottom: "1.5rem" }}>
+        <span className="article-back-icon">←</span>
+        返回首页
+      </Link>
 
       <div
         style={{

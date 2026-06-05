@@ -1,6 +1,6 @@
 import type { ArticleDetail, ArticleListItem } from "./types";
 
-const BASE_URL = "http://114.55.42.204:8000";
+const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 async function parseJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
