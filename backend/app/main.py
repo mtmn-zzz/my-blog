@@ -18,6 +18,9 @@ def _ensure_schema() -> None:
     """安全的数据库表结构初始化与升级逻辑"""
     try:
         logger.info("正在检查并初始化数据库表结构...")
+
+        from app.models import User
+        logger.info(f"正在强行注册模型，检测到表名: {User.__table__.name}")
         # 1. 创建缺失的表
         Base.metadata.create_all(bind=engine)
 
