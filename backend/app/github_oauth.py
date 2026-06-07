@@ -1,3 +1,4 @@
+import logging
 import os
 import secrets
 from datetime import UTC, datetime, timedelta
@@ -22,6 +23,8 @@ GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_URL = "https://api.github.com/user"
 GITHUB_EMAILS_URL = "https://api.github.com/user/emails"
+
+logger = logging.getLogger(__name__)
 
 
 def is_github_oauth_configured() -> bool:
@@ -62,52 +65,74 @@ def build_frontend_error_url(message: str) -> str:
 
 
 async def exchange_github_code(code: str) -> dict:
-    async with httpx.AsyncClient(timeout=15.0) as client:
-        token_res = await client.post(
-            GITHUB_TOKEN_URL,
-            headers={"Accept": "application/json"},
-            data={
-                "client_id": GITHUB_CLIENT_ID,
-                "client_secret": GITHUB_CLIENT_SECRET,
-                "code": code,
-                "redirect_uri": GITHUB_CALLBACK_URL,
-            },
-        )
-        if token_res.status_code != 200:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="GitHub 授权失败")
-        token_data = token_res.json()
-        access_token = token_data.get("access_token")
-        if not access_token:
-            github_error = token_data.get("error_description") or token_data.get("error")
-            detail = "未获取到 GitHub 访问令牌"
-            if github_error:
-                detail = f"{detail}：{github_error}"
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            token_res = await client.post(
+                GITHUB_TOKEN_URL,
+                headers={"Accept": "application/json"},
+                data={
+                    "client_id": GITHUB_CLIENT_ID,
+                    "client_secret": GITHUB_CLIENT_SECRET,
+                    "code": code,
+                    "redirect_uri": GITHUB_CALLBACK_URL,
+                },
+            )
+    except httpx.RequestError as exc:
+        logger.error("GitHub token 请求网络失败: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="服务器无法连接 GitHub，请检查网络或稍后重试",
+        ) from exc
 
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Accept": "application/json",
-        }
-        user_res = await client.get(GITHUB_USER_URL, headers=headers)
-        if user_res.status_code != 200:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="获取 GitHub 用户信息失败")
-        profile = user_res.json()
+    if token_res.status_code != 200:
+        logger.error("GitHub token HTTP %s: %s", token_res.status_code, token_res.text[:500])
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="GitHub 授权失败")
 
-        email = profile.get("email")
-        if not email:
-            emails_res = await client.get(GITHUB_EMAILS_URL, headers=headers)
-            if emails_res.status_code == 200:
-                emails = emails_res.json()
-                primary = next((item for item in emails if item.get("primary")), None)
-                verified = next((item for item in emails if item.get("verified")), None)
-                picked = primary or verified or (emails[0] if emails else None)
-                if picked:
-                    email = picked.get("email")
+    token_data = token_res.json()
+    access_token = token_data.get("access_token")
+    if not access_token:
+        github_error = token_data.get("error_description") or token_data.get("error")
+        logger.error("GitHub token 响应无 access_token: %s", token_data)
+        detail = "未获取到 GitHub 访问令牌"
+        if github_error:
+            detail = f"{detail}：{github_error}"
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
 
-        return {
-            "github_id": profile["id"],
-            "login": profile.get("login") or f"github_{profile['id']}",
-            "name": profile.get("name"),
-            "avatar_url": profile.get("avatar_url"),
-            "email": email,
-        }
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json",
+            }
+            user_res = await client.get(GITHUB_USER_URL, headers=headers)
+            if user_res.status_code != 200:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="获取 GitHub 用户信息失败",
+                )
+            profile = user_res.json()
+
+            email = profile.get("email")
+            if not email:
+                emails_res = await client.get(GITHUB_EMAILS_URL, headers=headers)
+                if emails_res.status_code == 200:
+                    emails = emails_res.json()
+                    primary = next((item for item in emails if item.get("primary")), None)
+                    verified = next((item for item in emails if item.get("verified")), None)
+                    picked = primary or verified or (emails[0] if emails else None)
+                    if picked:
+                        email = picked.get("email")
+    except httpx.RequestError as exc:
+        logger.error("GitHub user API 网络失败: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="服务器无法连接 GitHub API",
+        ) from exc
+
+    return {
+        "github_id": profile["id"],
+        "login": profile.get("login") or f"github_{profile['id']}",
+        "name": profile.get("name"),
+        "avatar_url": profile.get("avatar_url"),
+        "email": email,
+    }

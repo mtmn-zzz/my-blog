@@ -6,6 +6,10 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.github_oauth import (
+    GITHUB_CALLBACK_URL,
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+    FRONTEND_URL,
     build_frontend_callback_url,
     build_frontend_error_url,
     build_github_authorize_url,
@@ -75,6 +79,18 @@ def _find_or_create_github_user(db: Session, profile: dict) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.get("/github/config")
+def github_config():
+    """检查 GitHub OAuth 配置（不暴露 Secret）"""
+    return {
+        "configured": is_github_oauth_configured(),
+        "client_id": GITHUB_CLIENT_ID[:8] + "..." if GITHUB_CLIENT_ID else None,
+        "has_secret": bool(GITHUB_CLIENT_SECRET),
+        "callback_url": GITHUB_CALLBACK_URL,
+        "frontend_url": FRONTEND_URL,
+    }
 
 
 @router.get("/github")
