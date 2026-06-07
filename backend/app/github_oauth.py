@@ -11,13 +11,13 @@ from fastapi import HTTPException, status
 JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
 JWT_ALGORITHM = "HS256"
 
-GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "")
-GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "")
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "").strip()
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "").strip()
 GITHUB_CALLBACK_URL = os.getenv(
     "GITHUB_CALLBACK_URL",
     "http://127.0.0.1:8000/auth/github/callback",
-)
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+).strip()
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").strip()
 
 GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
