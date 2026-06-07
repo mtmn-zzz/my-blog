@@ -119,8 +119,6 @@ def create_comment(
         parent = db.get(Comment, parent_id)
         if not parent or parent.article_id != article_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="回复目标不存在")
-        if parent.parent_id is not None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="只能回复顶级评论")
 
     comment = Comment(
         article_id=article_id,

@@ -62,7 +62,7 @@ type CommentItemProps = {
   replySubmitting: boolean;
   onReplySubmit: (parentId: number, e: FormEvent) => void;
   onDelete: (id: number) => void;
-  isReply?: boolean;
+  depth?: number;
 };
 
 function CommentItem({
@@ -75,12 +75,12 @@ function CommentItem({
   replySubmitting,
   onReplySubmit,
   onDelete,
-  isReply = false,
+  depth = 0,
 }: CommentItemProps) {
   const isReplying = replyTo === comment.id;
 
   return (
-    <li className={`comment-item${isReply ? " comment-item-reply" : ""}`}>
+    <li className={`comment-item${depth > 0 ? " comment-item-reply" : ""}`}>
       <img
         className="comment-avatar"
         src={comment.user.avatar_url || DEFAULT_AVATAR}
@@ -93,7 +93,7 @@ function CommentItem({
         <div className="comment-meta">
           <span className="comment-author">{displayName(comment.user)}</span>
           <span className="comment-time">{formatCommentTime(comment.created_at)}</span>
-          {!isReply && user && (
+          {user && (
             <button type="button" className="comment-reply-btn" onClick={() => setReplyTo(comment.id)}>
               回复
             </button>
@@ -153,7 +153,7 @@ function CommentItem({
                 replySubmitting={replySubmitting}
                 onReplySubmit={onReplySubmit}
                 onDelete={onDelete}
-                isReply
+                depth={depth + 1}
               />
             ))}
           </ul>

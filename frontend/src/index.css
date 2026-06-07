@@ -1460,6 +1460,11 @@ select {
   height: 32px;
 }
 
+.comment-replies .comment-replies .comment-avatar {
+  width: 28px;
+  height: 28px;
+}
+
 .reply-form {
   margin-top: 0.75rem;
   display: flex;
