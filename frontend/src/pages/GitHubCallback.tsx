@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,10 +7,14 @@ export function GitHubCallback() {
   const navigate = useNavigate();
   const { loginWithToken } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const handled = useRef(false);
 
   useEffect(() => {
-    const token = params.get("token");
+    if (handled.current) return;
+    handled.current = true;
+
     const err = params.get("error");
+    const token = params.get("token")?.trim();
     if (err) {
       setError(decodeURIComponent(err));
       return;
@@ -22,7 +26,10 @@ export function GitHubCallback() {
 
     loginWithToken(token)
       .then(() => navigate("/", { replace: true }))
-      .catch((e: Error) => setError(e.message || "登录失败"));
+      .catch((e: unknown) => {
+        const message = e instanceof Error ? e.message : "";
+        setError(message || "登录失败，请返回登录页重试");
+      });
   }, [params, loginWithToken, navigate]);
 
   return (

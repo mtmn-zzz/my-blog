@@ -24,7 +24,29 @@ GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_URL = "https://api.github.com/user"
 GITHUB_EMAILS_URL = "https://api.github.com/user/emails"
 
+# GitHub OAuth 常见错误 → 中文说明
+_GITHUB_ERROR_HINTS: dict[str, str] = {
+    "bad_verification_code": "授权码无效或已使用，请从登录页重新点击 GitHub 登录（不要刷新回调页）",
+    "incorrect_client_credentials": "Client ID 或 Client Secret 不正确，请核对 .env 与 GitHub OAuth App",
+    "redirect_uri_mismatch": "Callback URL 不一致，GitHub App、.env、授权请求三处必须完全相同",
+    "application_suspended": "GitHub OAuth App 已被暂停",
+}
+
 logger = logging.getLogger(__name__)
+
+
+def _format_github_token_error(token_data: dict) -> str:
+    github_error = str(token_data.get("error") or "")
+    github_desc = str(token_data.get("error_description") or "")
+    hint = _GITHUB_ERROR_HINTS.get(github_error, "")
+    detail = "未获取到 GitHub 访问令牌"
+    if github_desc:
+        detail = f"{detail}：{github_desc}"
+    elif github_error:
+        detail = f"{detail}：{github_error}"
+    if hint:
+        detail = f"{detail}（{hint}）"
+    return detail
 
 
 def is_github_oauth_configured() -> bool:
@@ -57,7 +79,8 @@ def build_github_authorize_url(state: str) -> str:
 
 
 def build_frontend_callback_url(token: str) -> str:
-    return f"{FRONTEND_URL.rstrip('/')}/auth/github/callback?token={token}"
+    # JWT 必须 URL 编码，否则 + / = 等字符会在浏览器解析 query 时被破坏
+    return f"{FRONTEND_URL.rstrip('/')}/auth/github/callback?token={quote(token, safe='')}"
 
 
 def build_frontend_error_url(message: str) -> str:
@@ -69,7 +92,10 @@ async def exchange_github_code(code: str) -> dict:
         async with httpx.AsyncClient(timeout=30.0) as client:
             token_res = await client.post(
                 GITHUB_TOKEN_URL,
-                headers={"Accept": "application/json"},
+                headers={
+                    "Accept": "application/json",
+                    "User-Agent": "my-blog-oauth",
+                },
                 data={
                     "client_id": GITHUB_CLIENT_ID,
                     "client_secret": GITHUB_CLIENT_SECRET,
@@ -91,12 +117,16 @@ async def exchange_github_code(code: str) -> dict:
     token_data = token_res.json()
     access_token = token_data.get("access_token")
     if not access_token:
-        github_error = token_data.get("error_description") or token_data.get("error")
-        logger.error("GitHub token 响应无 access_token: %s", token_data)
-        detail = "未获取到 GitHub 访问令牌"
-        if github_error:
-            detail = f"{detail}：{github_error}"
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+        logger.error(
+            "GitHub token 交换失败 callback=%s client_id=%s... response=%s",
+            GITHUB_CALLBACK_URL,
+            (GITHUB_CLIENT_ID[:8] + "...") if GITHUB_CLIENT_ID else "(empty)",
+            token_data,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=_format_github_token_error(token_data),
+        )
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:

@@ -1,3 +1,4 @@
+import logging
 import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -22,6 +23,7 @@ from app.models import User
 from app.security import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["认证"])
+logger = logging.getLogger(__name__)
 
 
 def _unique_username(db: Session, base: str) -> str:
@@ -112,8 +114,11 @@ async def github_callback(code: str | None = None, state: str | None = None, db:
         profile = await exchange_github_code(code)
         user = _find_or_create_github_user(db, profile)
         token = create_access_token(user.id)
+        logger.info("GitHub login success user_id=%s username=%s", user.id, user.username)
         return RedirectResponse(build_frontend_callback_url(token), status_code=status.HTTP_302_FOUND)
     except HTTPException as exc:
+        logger.warning("GitHub callback failed: %s", exc.detail)
         return RedirectResponse(build_frontend_error_url(str(exc.detail)))
     except Exception:
+        logger.exception("GitHub callback unexpected error")
         return RedirectResponse(build_frontend_error_url("GitHub登录失败"))

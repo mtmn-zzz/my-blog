@@ -38,15 +38,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // OAuth 回调页会写入新 token，跳过旧 token 校验，避免竞态把新 token 清掉
+    const params = new URLSearchParams(window.location.search);
+    if (
+      window.location.pathname === "/auth/github/callback" &&
+      (params.has("token") || params.has("error"))
+    ) {
+      setLoading(false);
+      return;
+    }
+
     const token = getStoredToken();
     if (!token) {
       setLoading(false);
       return;
     }
+
+    let cancelled = false;
     fetchCurrentUser(token)
-      .then(setUser)
-      .catch(() => setStoredToken(null))
-      .finally(() => setLoading(false));
+      .then((currentUser) => {
+        if (!cancelled) setUser(currentUser);
+      })
+      .catch(() => {
+        if (!cancelled) setStoredToken(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback(async (username: string, password: string) => {
