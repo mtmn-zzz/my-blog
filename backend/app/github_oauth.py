@@ -66,7 +66,7 @@ async def exchange_github_code(code: str) -> dict:
         token_res = await client.post(
             GITHUB_TOKEN_URL,
             headers={"Accept": "application/json"},
-            json={
+            data={
                 "client_id": GITHUB_CLIENT_ID,
                 "client_secret": GITHUB_CLIENT_SECRET,
                 "code": code,
@@ -78,7 +78,11 @@ async def exchange_github_code(code: str) -> dict:
         token_data = token_res.json()
         access_token = token_data.get("access_token")
         if not access_token:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未获取到 GitHub 访问令牌")
+            github_error = token_data.get("error_description") or token_data.get("error")
+            detail = "未获取到 GitHub 访问令牌"
+            if github_error:
+                detail = f"{detail}：{github_error}"
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
 
         headers = {
             "Authorization": f"Bearer {access_token}",
