@@ -807,6 +807,33 @@ select {
   font-weight: 600;
 }
 
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #4b5563;
+  text-decoration: none;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.contact-item:hover {
+  color: #3b82f6;
+}
+
+.contact-icon {
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
 /* 页脚 */
 .footer {
   text-align: center;

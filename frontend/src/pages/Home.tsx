@@ -163,9 +163,24 @@ export function Home() {
             </div>
 
             <div className="section-title">📬 联系我</div>
-            <div style={{ display: "flex", gap: "12px", marginTop: "6px" }}>
-              <span>📧 2484830674@qq.com</span>
-              <span>🐙 github/mtmn-zzz</span>
+            <div className="contact-list">
+              <a href="mailto:2484830674@qq.com" className="contact-item">
+                <span className="contact-icon" aria-hidden="true">
+                  📧
+                </span>
+                <span>2484830674@qq.com</span>
+              </a>
+              <a
+                href="https://github.com/mtmn-zzz"
+                target="_blank"
+                rel="noreferrer"
+                className="contact-item"
+              >
+                <span className="contact-icon" aria-hidden="true">
+                  🐙
+                </span>
+                <span>github/mtmn-zzz</span>
+              </a>
             </div>
             <div
               style={{

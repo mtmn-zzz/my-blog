@@ -29,19 +29,24 @@ export function About() {
           <div className="about-name">槑头槑脑</div>
           <div className="about-bio">浙江大学学生 / 计算机爱好者</div>
           <div className="section-title">联系我</div>
-          <div style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.7 }}>
-            <div>2484830674@qq.com</div>
-            <div>
-              GitHub:{" "}
-              <a
-                href="https://github.com/mtmn-zzz"
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: "#3b82f6" }}
-              >
-                mtmn-zzz
-              </a>
-            </div>
+          <div className="contact-list">
+            <a href="mailto:2484830674@qq.com" className="contact-item">
+              <span className="contact-icon" aria-hidden="true">
+                📧
+              </span>
+              <span>2484830674@qq.com</span>
+            </a>
+            <a
+              href="https://github.com/mtmn-zzz"
+              target="_blank"
+              rel="noreferrer"
+              className="contact-item"
+            >
+              <span className="contact-icon" aria-hidden="true">
+                🐙
+              </span>
+              <span>github/mtmn-zzz</span>
+            </a>
           </div>
         </div>
 
