@@ -72,7 +72,7 @@ export function Profile() {
 
     setAvatarFallback(false);
 
-  }, [avatarPreview, user.avatar_url]);
+  }, [avatarPreview, user?.avatar_url]);
 
 
 
@@ -262,7 +262,7 @@ export function Profile() {
 
       await changePassword(oldPassword, newPassword);
 
-      setPwdMsg(user.has_password === false ? "密码已设置" : "密码已更新");
+      setPwdMsg(user?.has_password === false ? "密码已设置" : "密码已更新");
 
       setOldPassword("");
 
