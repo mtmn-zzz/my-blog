@@ -1,16 +1,19 @@
 import os
 import re
+import logging
 
 import httpx
 from fastapi import HTTPException, status
 
-AI_API_KEY = os.getenv("AI_API_KEY", "")
+AI_API_KEY = os.getenv("AI_API_KEY", "").strip()
 AI_API_BASE = os.getenv(
     "AI_API_BASE",
     "https://dashscope.aliyuncs.com/compatible-mode/v1",
-)
-AI_MODEL = os.getenv("AI_MODEL", "qwen-turbo")
+).strip()
+AI_MODEL = os.getenv("AI_MODEL", "qwen-plus").strip()
 MAX_CONTENT_CHARS = 6000
+
+logger = logging.getLogger(__name__)
 
 
 def is_ai_configured() -> bool:
@@ -58,10 +61,16 @@ async def generate_article_summary(title: str, content: str) -> str:
         )
 
     if response.status_code != 200:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="AI 服务请求失败，请稍后重试",
-        )
+        logger.error("AI API HTTP %s: %s", response.status_code, response.text[:500])
+        detail = "AI 服务请求失败，请稍后重试"
+        try:
+            err_body = response.json()
+            err_msg = err_body.get("error", {}).get("message") or err_body.get("message")
+            if err_msg:
+                detail = f"AI 服务错误：{err_msg}"
+        except Exception:
+            pass
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail)
 
     data = response.json()
     try:

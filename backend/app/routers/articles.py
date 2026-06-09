@@ -1,13 +1,26 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+import os
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.ai_summary import generate_article_summary, is_ai_configured
+from app.ai_summary import AI_API_BASE, AI_MODEL
 from app.database import get_db
 from app.models import Article, ArticleLike
 from app.schemas import ArticleCreate, ArticleListItem, ArticleRead, ArticleUpdate
 
 router = APIRouter(prefix="/articles", tags=["articles"])
+
+
+@router.get("/ai/status")
+def ai_status():
+    """检查 AI 摘要是否已配置（不暴露 API Key）"""
+    return {
+        "configured": is_ai_configured(),
+        "model": AI_MODEL,
+        "api_base": AI_API_BASE,
+        "has_api_key": bool(os.getenv("AI_API_KEY", "").strip()),
+    }
 
 
 def _articles_with_like_counts(articles: list[Article], db: Session) -> list[ArticleListItem]:

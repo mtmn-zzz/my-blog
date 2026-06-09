@@ -27,7 +27,7 @@ services:
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
       AI_API_KEY: ${AI_API_KEY:-}
       AI_API_BASE: ${AI_API_BASE:-https://dashscope.aliyuncs.com/compatible-mode/v1}
-      AI_MODEL: ${AI_MODEL:-qwen-turbo}
+      AI_MODEL: ${AI_MODEL:-qwen-plus}
     depends_on:
       db:
         condition: service_healthy
