@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.ai_summary import generate_article_summary, is_ai_configured
 from app.database import get_db
 from app.models import Article, ArticleLike
-from app.schemas import ArticleCreate, ArticleListItem, ArticleRead
+from app.schemas import ArticleCreate, ArticleListItem, ArticleRead, ArticleUpdate
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
@@ -86,6 +86,27 @@ async def create_article(payload: ArticleCreate, db: Session = Depends(get_db)):
     return article
 
 
+@router.patch("/{article_id}", response_model=ArticleRead)
+def update_article(
+    article_id: int,
+    payload: ArticleUpdate,
+    db: Session = Depends(get_db),
+):
+    article = db.get(Article, article_id)
+    if not article:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文章不存在")
+
+    data = payload.model_dump(exclude_unset=True)
+    if not data:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未提供要更新的字段")
+
+    for key, value in data.items():
+        setattr(article, key, value)
+    db.commit()
+    db.refresh(article)
+    return article
+
+
 @router.post("/{article_id}/summarize", response_model=ArticleRead)
 async def summarize_article(article_id: int, db: Session = Depends(get_db)):
     article = db.get(Article, article_id)
@@ -102,17 +123,9 @@ async def summarize_article(article_id: int, db: Session = Depends(get_db)):
 
 @router.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_article(article_id: int, db: Session = Depends(get_db)):
-
     article = db.get(Article, article_id)
-
-
     if not article:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="文章不存在"
-        )
-
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文章不存在")
     db.delete(article)
     db.commit()
-
     return None

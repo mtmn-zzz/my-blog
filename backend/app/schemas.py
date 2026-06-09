@@ -13,6 +13,12 @@ class ArticleCreate(ArticleBase):
     pass
 
 
+class ArticleUpdate(BaseModel):
+    title: str | None = Field(None, max_length=500)
+    summary: str | None = Field(None, max_length=2000)
+    content: str | None = None
+
+
 class ArticleRead(ArticleBase):
     model_config = ConfigDict(from_attributes=True)
 
